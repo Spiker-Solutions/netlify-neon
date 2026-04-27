@@ -1,0 +1,26 @@
+Neon + Netlify preview pipeline — manual steps after clone
+=========================================================
+
+1) Neon
+   - Create a project; note Project ID, database name, and database username.
+   - On the primary branch, copy pooled DATABASE_URL and direct DIRECT_URL (for migrations).
+
+2) Netlify (matches https://neon.com/guides/preview-deploys-netlify)
+   - Create a site linked to this repo (production branch: main).
+   - Site configuration → Build & deploy → Continuous deployment → Deploy previews → None
+     (previews are deployed only by GitHub Actions so DB URLs can be injected per PR.)
+   - Environment variables → Production: set DATABASE_URL (pooled) and DIRECT_URL (direct).
+   - Create a personal access token at https://app.netlify.com/user/applications for the CLI.
+
+3) GitHub repository
+   - Create an empty repo; push this repository’s main branch.
+   - Settings → Secrets and variables → Actions → New repository secret:
+     NEON_API_KEY, NEON_PROJECT_ID, NEON_DATABASE_NAME, NEON_DATABASE_USERNAME,
+     NETLIFY_SITE_ID, NETLIFY_AUTH_TOKEN
+
+4) Verify
+   - Open a pull request against main.
+   - Confirm the workflow creates a Neon branch, runs prisma migrate deploy, deploys to Netlify, and comments with links.
+   - Merge or close the PR and confirm the Neon preview branch is deleted.
+
+Local development: copy .env.example to .env and fill DATABASE_URL and DIRECT_URL from Neon.
