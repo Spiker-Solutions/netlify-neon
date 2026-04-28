@@ -21,6 +21,9 @@ export default async function Home() {
         <p className="mt-4 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
           This page calls Prisma against <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">DATABASE_URL</code>. Use a PR preview to confirm the branched Neon database is wired correctly.
         </p>
+        <p className="mt-3 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+          PR branch: chore/preview-deploy-smoke — if you see this on the Netlify preview URL, the deploy-preview workflow built this revision.
+        </p>
         <dl className="mt-6 space-y-2 text-sm">
           <div className="flex justify-between gap-4">
             <dt className="text-zinc-500">Element rows</dt>
