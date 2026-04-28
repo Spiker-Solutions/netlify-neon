@@ -51,26 +51,28 @@ jobs:
       - name: Install Netlify CLI
         run: npm install -g netlify-cli && netlify link --id ${{ env.NETLIFY_SITE_ID }} --auth ${{ env.NETLIFY_AUTH_TOKEN }}
 
-      # Local .env is not enough: Next.js SSR reads process.env on Netlify's servers,
-      # which come from site env for this context. Push branch DB URLs into deploy-preview
-      # (last PR wins if previews overlap — same tradeoff as the upstream guide's .env pattern).
+      # Local .env is not enough: Next.js SSR reads process.env on Netlify's servers.
+      # Use a branch-specific Netlify context per PR to avoid cross-PR env collisions.
       - name: Deploy preview to Netlify with CLI
         id: deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: |
+          NETLIFY_CONTEXT="branch:preview-pr-${{ github.event.number }}"
+          DEPLOY_ALIAS="pr-${{ github.event.number }}"
+
           netlify env:set DATABASE_URL "${{ steps.create-branch.outputs.db_url_with_pooler }}" \
-            --context deploy-preview \
+            --context "$NETLIFY_CONTEXT" \
             --scope builds functions runtime \
             --secret \
             --force
           netlify env:set DIRECT_URL "${{ steps.create-branch.outputs.db_url }}" \
-            --context deploy-preview \
+            --context "$NETLIFY_CONTEXT" \
             --scope builds functions runtime \
             --secret \
             --force
 
-          netlify deploy --alias="pr-${{ github.event.number }}" --context=deploy-preview --json > netlify-deploy.json
+          netlify deploy --alias="$DEPLOY_ALIAS" --context="$NETLIFY_CONTEXT" --json > netlify-deploy.json
           DEPLOY_URL=$(cat netlify-deploy.json | jq -r ".deploy_url")
           echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
 
