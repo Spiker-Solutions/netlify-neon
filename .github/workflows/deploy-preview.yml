@@ -63,12 +63,10 @@ jobs:
 
           netlify env:set DATABASE_URL "${{ steps.create-branch.outputs.db_url_with_pooler }}" \
             --context "$NETLIFY_CONTEXT" \
-            --scope builds functions runtime \
             --secret \
             --force
           netlify env:set DIRECT_URL "${{ steps.create-branch.outputs.db_url }}" \
             --context "$NETLIFY_CONTEXT" \
-            --scope builds functions runtime \
             --secret \
             --force
 
